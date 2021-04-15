@@ -1,0 +1,15 @@
+name: build-staging
+on:
+  push:
+    branches:
+      - 'staging'
+jobs:
+  build-main:
+    name: Build Staging
+    runs-on: ubuntu-latest
+    env:
+      DOCKERHUB_USR: ${{ secrets.DOCKERHUB_USR }}
+      DOCKERHUB_PWD: ${{ secrets.DOCKERHUB_PWD }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2

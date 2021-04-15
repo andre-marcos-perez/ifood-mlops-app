@@ -1,0 +1,15 @@
+name: build-main
+on:
+  push:
+    branches:
+      - 'main'
+jobs:
+  build-main:
+    name: Build Main
+    runs-on: ubuntu-latest
+    env:
+      DOCKERHUB_USR: ${{ secrets.DOCKERHUB_USR }}
+      DOCKERHUB_PWD: ${{ secrets.DOCKERHUB_PWD }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
