@@ -20,17 +20,23 @@ function cleanContainers() {
     docker stop "${container}"
     docker rm "${container}"
 
+    container="$(docker ps -a | grep 'database' | awk '{print $1}')"
+    docker stop "${container}"
+    docker rm "${container}"
+
 }
 
 function cleanImages() {
 
   docker rmi -f "$(docker images | grep -m 1 'sandbox' | awk '{print $3}')"
+  docker rmi -f "$(docker images | grep -m 1 'database' | awk '{print $3}')"
   docker rmi -f "$(docker images | grep -m 1 'base' | awk '{print $3}')"
 
 }
 
 function cleanVolume() {
   docker volume rm "sandbox"
+  docker volume rm "database"
 }
 
 function buildImages() {
