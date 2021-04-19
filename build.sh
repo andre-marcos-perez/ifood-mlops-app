@@ -16,6 +16,10 @@ JUPYTERLAB_VERSION="3.0.0"
 
 function cleanContainers() {
 
+    container="$(docker ps -a | grep 'pipeline' | awk '{print $1}')"
+    docker stop "${container}"
+    docker rm "${container}"
+
     container="$(docker ps -a | grep 'sandbox' | awk '{print $1}')"
     docker stop "${container}"
     docker rm "${container}"
@@ -28,8 +32,8 @@ function cleanContainers() {
 
 function cleanImages() {
 
+  docker rmi -f "$(docker images | grep -m 1 'pipeline' | awk '{print $3}')"
   docker rmi -f "$(docker images | grep -m 1 'sandbox' | awk '{print $3}')"
-  docker rmi -f "$(docker images | grep -m 1 'database' | awk '{print $3}')"
   docker rmi -f "$(docker images | grep -m 1 'base' | awk '{print $3}')"
 
 }
@@ -50,6 +54,11 @@ function buildImages() {
     --build-arg jupyterlab_version="${JUPYTERLAB_VERSION}" \
     -f sandbox/Dockerfile \
     -t sandbox:latest .
+
+  docker build \
+    --build-arg build_date="${BUILD_DATE}" \
+    -f pipeline/Dockerfile \
+    -t pipeline:latest .
 
 }
 

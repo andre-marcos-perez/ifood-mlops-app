@@ -3,8 +3,6 @@
 # -- Docs: https://github.com/andre-marcos-perez/ifood-mlops-app -------------------------
 # ----------------------------------------------------------------------------------------
 version: "3.6"
-networks:
-  database:
 volumes:
   sandbox:
     name: "sandbox"
@@ -21,6 +19,19 @@ services:
       - 8888:8888
     volumes:
       - sandbox:/opt/workspace
+  pipeline:
+    image: pipeline:latest
+    container_name: pipeline
+    environment:
+      AIRFLOW__WEBSERVER__WORKERS: "2"
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "False"
+    command: webserver
+    network_mode: host
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./pipeline/dags/:/usr/local/airflow/dags/
+      - ./pipeline/requirements.txt:/requirements.txt
   database:
     image: mysql:8.0.23
     container_name: database
