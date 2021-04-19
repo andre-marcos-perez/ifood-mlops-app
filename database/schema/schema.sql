@@ -28,8 +28,19 @@ CREATE TABLE project (
     CONSTRAINT pk_project PRIMARY KEY (id)
 );
 
+CREATE TABLE experiment (
+    id INT UNIQUE NOT NULL AUTO_INCREMENT,
+    project_id INT NOT NULL,
+    status VARCHAR(30) NOT NULL DEFAULT 'created',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT pk_experiment PRIMARY KEY (id),
+    FOREIGN KEY (project_id) REFERENCES project (id),
+)
+
 # ----------------------------------------------------------------------------
 # -- ROLLBACK
 # ----------------------------------------------------------------------------
 
+# DROP TABLE IF EXISTS experiment;
 # DROP TABLE IF EXISTS project;

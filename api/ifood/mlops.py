@@ -1,28 +1,55 @@
 from api.database import Database
-
-
-def _get_database():
-    return Database(host='localhost', port=3306, user='root', password='root', database='ifood_mlops_app_db')
+from api.pipeline import Pipeline
 
 
 def create_project(name: str) -> int:
     query = f"INSERT INTO project (name) VALUES ('{name}')"
-    database = _get_database()
+    database = Database()
     return database.write(query=query)
 
 
 def get_projects() -> dict:
     query = "SELECT * FROM project"
-    database = _get_database()
+    database = Database()
     return database.read(query=query)
 
 
-if __name__ == '__main__':
+def run_experiment(project_id: int, engine: str) -> int:
 
-    projects = get_projects()
-    print(projects)
+    _ENGINES = ['scikit']
 
-    project_id = create_project(name='credit-score')
+    if engine not in _ENGINES:
+        raise Exception(f'Engine not registered, must be one of the following: {",".join(_ENGINES)}')
 
-    projects = get_projects()
-    print(projects)
+    database = Database()
+    query = f"INSERT INTO experiment (project_id, engine) VALUES ('{project_id}', '{engine}')"
+    experiment_id = database.write(query=query)
+
+    pipeline = Pipeline()
+    triggered = pipeline.trigger_dag(dag_id='{engine}_pipeline', data={'conf': {'experiment_id': experiment_id}})
+
+    if triggered:
+        query = f"UPDATE experiment SET status = 'queued' WHERE id = {experiment_id}"
+        database.write(query=query)
+    else:
+        query = f"UPDATE experiment SET status = 'failed' WHERE id = {experiment_id}"
+        database.write(query=query)
+        raise Exception('Pipeline failed to run experiment')
+
+    return experiment_id
+
+
+def get_experiments() -> dict:
+    query = "SELECT * FROM experiment"
+    database = Database()
+    return database.read(query=query)
+
+
+def get_experiment(experiment_id: int) -> dict:
+    query = f"SELECT * FROM experiment WHERE id = {experiment_id}"
+    database = Database()
+    return database.read(query=query)
+
+
+def deploy_experiment(experiment_id: int) -> int:
+    pass

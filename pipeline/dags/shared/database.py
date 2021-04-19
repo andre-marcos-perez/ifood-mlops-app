@@ -3,12 +3,12 @@ import pymysql
 
 class Database(object):
 
-    def __init__(self):
-        self._host = 'localhost'
-        self._port = 3306
-        self._user = 'root'
-        self._password = 'root'
-        self._database = 'ifood_mlops_app_db'
+    def __init__(self, host: str, port: int, user: str, password: str, database: str):
+        self._host = host
+        self._port = port
+        self._user = user
+        self._password = password
+        self._database = database
         self._connection = self._connect()
 
     def _connect(self) -> pymysql.Connection:
