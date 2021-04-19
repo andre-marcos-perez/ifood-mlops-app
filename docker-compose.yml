@@ -16,6 +16,7 @@ services:
   sandbox:
     image: sandbox:latest
     container_name: sandbox
+    network_mode: host
     ports:
       - 8888:8888
     volumes:
