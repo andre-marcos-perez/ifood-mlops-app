@@ -26,10 +26,10 @@ def run_experiment(project_id: int, engine: str) -> int:
     experiment_id = database.write(query=query)
 
     pipeline = Pipeline()
-    triggered = pipeline.trigger_dag(dag_id='{engine}_pipeline', data={'conf': {'experiment_id': experiment_id}})
+    triggered = pipeline.trigger_dag(dag_id=f'{engine}-pipeline', data={'conf': {'experiment_id': experiment_id}})
 
     if triggered:
-        query = f"UPDATE experiment SET status = 'queued' WHERE id = {experiment_id}"
+        query = f"UPDATE experiment SET status = 'submitted' WHERE id = {experiment_id}"
         database.write(query=query)
     else:
         query = f"UPDATE experiment SET status = 'failed' WHERE id = {experiment_id}"

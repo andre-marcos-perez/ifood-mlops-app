@@ -28,7 +28,7 @@ services:
     command: webserver
     network_mode: host
     ports:
-      - "8080:8080"
+      - 8080:8080
     volumes:
       - ./pipeline/dags/:/usr/local/airflow/dags/
       - ./pipeline/requirements.txt:/requirements.txt
@@ -39,7 +39,7 @@ services:
       MYSQL_ROOT_PASSWORD: "root"
     network_mode: host
     ports:
-      - "3306:3306"
+      - 3306:3306
     volumes:
       - database:/var/lib/mysql
       - ./database/schema/schema.sql:/docker-entrypoint-initdb.d/schema.sql
