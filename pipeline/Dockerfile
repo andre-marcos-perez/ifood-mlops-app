@@ -19,6 +19,12 @@ RUN apt-get update -y && \
     pip3 install -r requirements.txt && \
     rm -rf /var/lib/apt/lists/*
 
+# -- Layer: Registry
+
+ARG registry=/opt/registry
+RUN mkdir -p ${registry}/
+ENV REGISTRY=${registry}
+
 # -- Layer: Runtime
 
 USER airflow

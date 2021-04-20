@@ -34,6 +34,12 @@ RUN echo "import sys\nsys.path.append('${customdir}')" > custom.py && \
 ARG workspace=/opt/workspace
 ADD ./sandbox/workspace/ ${workspace}/
 
+# -- Layer: Registry
+
+ARG registry=/opt/registry
+RUN mkdir -p ${registry}/
+ENV REGISTRY=${registry}
+
 # -- Runtime
 
 EXPOSE 8888
