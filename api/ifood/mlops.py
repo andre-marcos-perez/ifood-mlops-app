@@ -1,4 +1,4 @@
-import json
+import pandas as pd
 
 from api.database import Database
 from api.pipeline import Pipeline
@@ -17,9 +17,9 @@ def get_projects() -> dict:
     return database.read(query=query)
 
 
-def run_experiment(project_id: int, engine: str, model: object) -> int:
+def run_experiment(project_id: int, engine: str, model: object, features: pd.DataFrame, target: pd.DataFrame) -> int:
 
-    _ENGINES = ['scikit']
+    _ENGINES = ['sklearn']
     if engine not in _ENGINES:
         raise Exception(f'Engine not registered, must be one of the following: {",".join(_ENGINES)}')
 
@@ -28,17 +28,18 @@ def run_experiment(project_id: int, engine: str, model: object) -> int:
     experiment_id = database.write(query=query)
 
     registry = Registry()
-    registry.put_model(path=f"{project_id}-{experiment_id}", model=model)
-    hyper_params = json.dumps(model.__dict__)
+    registry.put_model(path=f"{project_id}-{experiment_id}", key='model', model=model)
+    registry.put_dataset(path=f"{project_id}-{experiment_id}", key='target', dataset=target)
+    registry.put_dataset(path=f"{project_id}-{experiment_id}", key='features', dataset=features)
 
     pipeline = Pipeline()
-    triggered = pipeline.trigger_dag(dag_id=f'{engine}-pipeline', data={'conf': {'experiment_id': experiment_id}})
+    triggered = pipeline.trigger_dag(dag_id=f'{engine}-pipeline', data={'conf': {'experiment_id': experiment_id, 'project_id': project_id}})
 
     if triggered:
-        query = f"UPDATE experiment SET status = 'submitted', hyperparams = '{hyper_params}' WHERE id = {experiment_id}"
+        query = f"UPDATE experiment SET status = 'submitted' WHERE id = {experiment_id}"
         database.write(query=query)
     else:
-        query = f"UPDATE experiment SET status = 'failed' WHERE id = {experiment_id}"
+        query = f"UPDATE experiment SET status = 'submission-failed' WHERE id = {experiment_id}"
         database.write(query=query)
         raise Exception('Pipeline failed to run experiment')
 
@@ -57,18 +58,29 @@ def get_experiment(experiment_id: int) -> dict:
     return database.read(query=query)
 
 
+def get_experiment_model(experiment_id: int) -> object:
+    database = Database()
+    query = f"SELECT project_id FROM experiment WHERE id = {experiment_id}"
+    project_id = database.read(query=query)
+    registry = Registry()
+    return registry.get_model(path=f"{project_id}-{experiment_id}", key='model')
+
+
+def get_experiment_features(experiment_id: int) -> pd.DataFrame:
+    database = Database()
+    query = f"SELECT project_id FROM experiment WHERE id = {experiment_id}"
+    project_id = database.read(query=query)
+    registry = Registry()
+    return registry.get_dataset(path=f"{project_id}-{experiment_id}", key='features')
+
+
+def get_experiment_target(experiment_id: int) -> pd.DataFrame:
+    database = Database()
+    query = f"SELECT project_id FROM experiment WHERE id = {experiment_id}"
+    project_id = database.read(query=query)
+    registry = Registry()
+    return registry.get_dataset(path=f"{project_id}-{experiment_id}", key='target')
+
+
 def deploy_experiment(experiment_id: int) -> int:
     pass
-
-
-if __name__ == '__main__':
-
-    from sklearn import *
-
-    pid = create_project(name='success')
-
-    eid = run_experiment(project_id=pid, engine='scikit', model=linear_model.LogisticRegression())
-    print(eid)
-
-    eids = get_experiment(experiment_id=1)
-    print(eids)
