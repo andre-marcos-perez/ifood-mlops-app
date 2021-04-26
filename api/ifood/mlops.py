@@ -17,7 +17,7 @@ def get_projects() -> dict:
     return database.read(query=query)
 
 
-def run_experiment(project_id: int, engine: str, model: object, features: pd.DataFrame, target: pd.DataFrame) -> int:
+def run_experiment(project_id: int, engine: str, model: object, target_col: str, train_data: pd.DataFrame, test_data: pd.DataFrame, metrics: dict) -> int:
 
     _ENGINES = ['sklearn']
     if engine not in _ENGINES:
@@ -29,11 +29,13 @@ def run_experiment(project_id: int, engine: str, model: object, features: pd.Dat
 
     registry = Registry()
     registry.put_model(path=f"{project_id}-{experiment_id}", key='model', model=model)
-    registry.put_dataset(path=f"{project_id}-{experiment_id}", key='target', dataset=target)
-    registry.put_dataset(path=f"{project_id}-{experiment_id}", key='features', dataset=features)
+    registry.put_metrics(path=f"{project_id}-{experiment_id}", key='metrics', metrics=metrics)
+    registry.put_dataset(path=f"{project_id}-{experiment_id}", key='test', dataset=test_data)
+    registry.put_dataset(path=f"{project_id}-{experiment_id}", key='train', dataset=train_data)
 
     pipeline = Pipeline()
-    triggered = pipeline.trigger_dag(dag_id=f'{engine}-pipeline', data={'conf': {'experiment_id': experiment_id, 'project_id': project_id}})
+    conf = {'experiment_id': experiment_id, 'project_id': project_id, 'target_col': target_col}
+    triggered = pipeline.trigger_dag(dag_id=f'{engine}-pipeline', data=dict(conf=conf))
 
     if triggered:
         query = f"UPDATE experiment SET status = 'submitted' WHERE id = {experiment_id}"
@@ -55,7 +57,7 @@ def get_experiments() -> dict:
 def get_experiment(experiment_id: int) -> dict:
     query = f"SELECT * FROM experiment WHERE id = {experiment_id}"
     database = Database()
-    return database.read(query=query)
+    return database.read(query=query)[0]
 
 
 def get_experiment_model(experiment_id: int) -> object:

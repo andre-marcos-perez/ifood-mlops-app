@@ -33,6 +33,7 @@ CREATE TABLE experiment (
     project_id INT NOT NULL,
     engine VARCHAR(30) NOT NULL,
     hyperparams MEDIUMBLOB,
+    metrics MEDIUMBLOB,
     status VARCHAR(30) NOT NULL DEFAULT 'created',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

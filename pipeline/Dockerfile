@@ -24,7 +24,3 @@ RUN apt-get update -y && \
 ARG registry=/opt/registry
 RUN mkdir -p ${registry}/
 ENV REGISTRY=${registry}
-
-# -- Layer: Runtime
-
-USER airflow

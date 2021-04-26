@@ -3,6 +3,7 @@ from datetime import datetime
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 
+from sklearn_pipeline.tasks.test import test
 from sklearn_pipeline.tasks.train import train
 from sklearn_pipeline.tasks.start import start
 from sklearn_pipeline.tasks.finish import finish
@@ -30,6 +31,14 @@ train = PythonOperator(
     dag=dag
 )
 
+test = PythonOperator(
+    task_id='test',
+    python_callable=test,
+    op_kwargs=None,
+    provide_context=True,
+    dag=dag
+)
+
 finish = PythonOperator(
     task_id='finish',
     python_callable=finish,
@@ -38,4 +47,4 @@ finish = PythonOperator(
     dag=dag
 )
 
-start >> train >> finish
+start >> train >> test >> finish
