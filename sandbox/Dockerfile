@@ -12,11 +12,10 @@ LABEL org.label-schema.schema-version="1.0"
 
 # -- Layer: JupyterLab + Requirements
 
-ARG jupyterlab_version
 COPY ./sandbox/requirements.txt requirements.txt
 
 RUN apt-get update -y && \
-    pip3 install jupyterlab==${jupyterlab_version} && \
+    pip3 install jupyterlab==3.0.0 && \
     pip3 install -r requirements.txt && \
     rm -rf /var/lib/apt/lists/*
 

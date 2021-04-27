@@ -18,7 +18,6 @@ jobs:
         with:
           DOCKERHUB_USR: ${DOCKERHUB_USR}
           DOCKERHUB_PWD: ${DOCKERHUB_PWD}
-          JUPYTERLAB_VERSION: "3.0.0"
       - name: Build Pipeline
         uses: ./.github/actions/build-pipeline
         with:
