@@ -1,4 +1,4 @@
-import joblib as pickle
+import joblib
 from pathlib import Path
 
 import pandas as pd
@@ -12,19 +12,19 @@ class Registry(object):
     def put_metrics(self, path: str, key: str, metrics: dict):
         directory = Path(f"{self._base_dir}/{path}")
         directory.mkdir(parents=True, exist_ok=True)
-        pickle.dump(metrics, filename=f"{self._base_dir}/{path}/{key}.pickle")
+        joblib.dump(metrics, filename=f"{self._base_dir}/{path}/{key}.pickle")
 
     def get_metrics(self, path: str, key: str) -> object:
-        metrics = pickle.load(filename=f"{self._base_dir}/{path}/{key}.pickle")
+        metrics = joblib.load(filename=f"{self._base_dir}/{path}/{key}.pickle")
         return metrics
 
     def put_model(self, path: str, key: str, model: object):
         directory = Path(f"{self._base_dir}/{path}")
         directory.mkdir(parents=True, exist_ok=True)
-        pickle.dump(model, filename=f"{self._base_dir}/{path}/{key}.pickle")
+        joblib.dump(model, filename=f"{self._base_dir}/{path}/{key}.pickle")
 
     def get_model(self, path: str, key: str) -> object:
-        model = pickle.load(filename=f"{self._base_dir}/{path}/{key}.pickle")
+        model = joblib.load(filename=f"{self._base_dir}/{path}/{key}.pickle")
         return model
 
     def put_dataset(self, path: str, key: str, dataset: pd.DataFrame):

@@ -52,6 +52,7 @@ services:
     container_name: serving
     environment:
       PORT: "8000"
+      MAX_WORKERS: "1"
     network_mode: host
     ports:
       - 8000:8000
