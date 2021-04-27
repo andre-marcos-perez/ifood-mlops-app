@@ -23,11 +23,9 @@ Install [Docker](https://docs.docker.com/get-docker/) (v1.13.0+) and [Docker Com
 
 ### 2. Architecture
 
-### 2.1. Overview
-
 <p align="center"><img src="docs/image/mlops-docker.png"></p>
 
-### 2.2. Applications
+### 2.1. Applications
 
 | App          | Address                                            | Description                                                    |
 | ------------ | -------------------------------------------------- | -------------------------------------------------------------- |
@@ -37,13 +35,13 @@ Install [Docker](https://docs.docker.com/get-docker/) (v1.13.0+) and [Docker Com
 | Serving API  | [localhost:8000](http://localhost:8000/)           | FastAPI based api to serve models predictions and predictions  |
 | Serving Docs | [localhost:8000/docs](http://localhost:8000/docs/) | Swagger based web docs for serving api 
 
-### 2.3. Description
+### 2.2. Description
 
 For a further description of each application, please checkout [docs](docs/Apps.md).
 
 ## 3. Build
 
-## 3.1. Local build
+### 3.1. Local build
 
 You can build the project locally.
 
@@ -53,14 +51,14 @@ You can build the project locally.
 ./build.sh
 ```
 
-## 3.2. Remote build (recommended)
+### 3.2. Remote build (recommended)
 
 Alternatively, you can use the images pre-built on [DockerHub](https://hub.docker.com/u/andreper). The images are built
 with GitHub actions, you can check the code [here](.github/workflows).
 
 ## 4. Run
 
-## 4.1. Run local build
+### 4.1. Run local build
 
 If you build the project locally, you can start the platform with the following command:
 
@@ -68,7 +66,7 @@ If you build the project locally, you can start the platform with the following 
 docker-compose -f docker-compose-local.yml up
 ```
 
-## 4.2. Run remote build (recommended)
+### 4.2. Run remote build (recommended)
 
 If you prefer to use the pre-built images, start the platform by running the following command:
 
