@@ -47,4 +47,14 @@ services:
     volumes:
       - database:/var/lib/mysql
       - ./database/schema/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+  serving:
+    image: serving:latest
+    container_name: serving
+    environment:
+      PORT: "8000"
+    network_mode: host
+    ports:
+      - 8000:8000
+    volumes:
+      - registry:/opt/registry
 ...

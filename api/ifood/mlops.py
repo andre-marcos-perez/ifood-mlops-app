@@ -28,7 +28,7 @@ def run_experiment(project_id: int, engine: str, model: object, target_col: str,
     experiment_id = database.write(query=query)
 
     registry = Registry()
-    registry.put_model(path=f"{project_id}-{experiment_id}", key='model', model=model)
+    registry.put_model(path=f"{project_id}-{experiment_id}", key='pre-model', model=model)
     registry.put_metrics(path=f"{project_id}-{experiment_id}", key='metrics', metrics=metrics)
     registry.put_dataset(path=f"{project_id}-{experiment_id}", key='test', dataset=test_data)
     registry.put_dataset(path=f"{project_id}-{experiment_id}", key='train', dataset=train_data)
@@ -63,7 +63,7 @@ def get_experiment(experiment_id: int) -> dict:
 def get_experiment_model(experiment_id: int) -> object:
     database = Database()
     query = f"SELECT project_id FROM experiment WHERE id = {experiment_id}"
-    project_id = database.read(query=query)
+    project_id = database.read(query=query)[0]['project_id']
     registry = Registry()
     return registry.get_model(path=f"{project_id}-{experiment_id}", key='model')
 
@@ -71,7 +71,7 @@ def get_experiment_model(experiment_id: int) -> object:
 def get_experiment_features(experiment_id: int) -> pd.DataFrame:
     database = Database()
     query = f"SELECT project_id FROM experiment WHERE id = {experiment_id}"
-    project_id = database.read(query=query)
+    project_id = database.read(query=query)[0]['project_id']
     registry = Registry()
     return registry.get_dataset(path=f"{project_id}-{experiment_id}", key='features')
 
@@ -79,10 +79,23 @@ def get_experiment_features(experiment_id: int) -> pd.DataFrame:
 def get_experiment_target(experiment_id: int) -> pd.DataFrame:
     database = Database()
     query = f"SELECT project_id FROM experiment WHERE id = {experiment_id}"
-    project_id = database.read(query=query)
+    project_id = database.read(query=query)[0]['project_id']
     registry = Registry()
     return registry.get_dataset(path=f"{project_id}-{experiment_id}", key='target')
 
 
-def deploy_experiment(experiment_id: int) -> int:
-    pass
+def deploy_experiment(experiment_id: int) -> bool:
+    database = Database()
+    query = f"SELECT project_id FROM experiment WHERE id = {experiment_id}"
+    project_id = database.read(query=query)[0]['project_id']
+    query = f"UPDATE experiment SET status = 'rolled-back' WHERE project_id = '{project_id}' AND status = 'deployed'"
+    database.write(query=query)
+    query = f"UPDATE experiment SET status = 'deployed' WHERE id = {experiment_id}"
+    database.write(query=query)
+    return True
+
+
+def get_deployments():
+    query = f"SELECT * FROM experiment WHERE status = 'deployed'"
+    database = Database()
+    return database.read(query=query)
