@@ -2,6 +2,8 @@
 
 > This repository is the documentation of my solution for the iFood ML Engineer test.
 
+![build-main](https://github.com/andre-marcos-perez/ifood-mlops-app/actions/workflows/main.yaml/badge.svg)
+
 ## 1. Getting Started
 
 ### 1.1. Introduction

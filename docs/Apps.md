@@ -61,5 +61,5 @@ generates the predictions and store them on the database. A x-api-key header sim
 
 Lots! A dedicated key-value caching database (a.k.a. Redis) should be used to cache predictions, a queued base system
 could be used to avoid the prediction endpoint to directly access the database, models should be on their on 
-microservice, making the serving API a interface between clients and models endpoints, more effort must be put into the
-Swagger docs, etc.
+microservice, making the serving API a interface between clients and models endpoints, scaling capacity with load balancers,
+more effort must be put into the Swagger docs, etc.
