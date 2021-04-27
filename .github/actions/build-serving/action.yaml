@@ -13,14 +13,14 @@ runs:
     - name: Build Base Image
       shell: bash
       run: |
-        cd ${GITHUB_WORKSPACE}/build
+        cd ${GITHUB_WORKSPACE}
         docker build \
           -f shared/Dockerfile \
           -t base:latest .
     - name: Build & Push Serving Image
       shell: bash
       run: |
-        cd ${GITHUB_WORKSPACE}/build
+        cd ${GITHUB_WORKSPACE}
         docker build \
           --build-arg build_date="$(date -u +'%Y-%m-%d')" \
           -f serving/Dockerfile \
