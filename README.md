@@ -10,6 +10,8 @@
 
 <p align="center"><img src="docs/image/mlops-docker.png"></p>
 
+### 1.3. Applications
+
 | App          | Address                                            | Description                                                     |
 | ------------ | -------------------------------------------------- | --------------------------------------------------------------- |
 | Sandbox      | [localhost:8888](http://localhost:8888/)           | **Jupyter** based env to develop, train, test and deploy models |
@@ -18,7 +20,7 @@
 | Serving API  | [localhost:8000](http://localhost:8000/)           | **FastAPI** based api to serve models prediction                |
 | Serving Docs | [localhost:8000/docs](http://localhost:8000/docs/) | **Swagger** based web docs for serving api                      |
 
-### 1.3. Pre-requisites
+### 1.4. Pre-requisites
 
 Install [Docker](https://docs.docker.com/get-docker/) (v1.13.0+) and [Docker Compose](https://docs.docker.com/compose/install/) (v1.10.0+).
 
