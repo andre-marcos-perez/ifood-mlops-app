@@ -1,0 +1,30 @@
+name: build-staging
+on:
+  push:
+    branches:
+      - 'staging'
+jobs:
+  build-main:
+    name: Build Staging
+    runs-on: ubuntu-latest
+    env:
+      DOCKERHUB_USR: ${{ secrets.DOCKERHUB_USR }}
+      DOCKERHUB_PWD: ${{ secrets.DOCKERHUB_PWD }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+      - name: Build Sandbox
+        uses: ./.github/actions/build-sandbox
+        with:
+          DOCKERHUB_USR: ${DOCKERHUB_USR}
+          DOCKERHUB_PWD: ${DOCKERHUB_PWD}
+      - name: Build Pipeline
+        uses: ./.github/actions/build-pipeline
+        with:
+          DOCKERHUB_USR: ${DOCKERHUB_USR}
+          DOCKERHUB_PWD: ${DOCKERHUB_PWD}
+      - name: Build Serving
+        uses: ./.github/actions/build-serving
+        with:
+          DOCKERHUB_USR: ${DOCKERHUB_USR}
+          DOCKERHUB_PWD: ${DOCKERHUB_PWD}

@@ -1,0 +1,31 @@
+name: build-pipeline
+description: builds pipeline image
+inputs:
+  DOCKERHUB_USR:
+    description: 'Docker Hub user to push images with'
+    required: true
+  DOCKERHUB_PWD:
+    description: 'Docker Hub password to push images with'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Build Base Image
+      shell: bash
+      run: |
+        cd ${GITHUB_WORKSPACE}
+        docker build \
+          -f shared/Dockerfile \
+          -t base:latest .
+    - name: Build & Push pipeline Image
+      shell: bash
+      run: |
+        cd ${GITHUB_WORKSPACE}
+        docker build \
+          --build-arg build_date="$(date -u +'%Y-%m-%d')" \
+          --build-arg jupyterlab_version="${JUPYTERLAB_VERSION}" \
+          -f pipeline/Dockerfile \
+          -t pipeline:latest .
+        docker tag pipeline:latest ${{ inputs.DOCKERHUB_USR }}/pipeline:latest
+        echo ${{ inputs.DOCKERHUB_PWD }} | docker login -u ${{ inputs.DOCKERHUB_USR }} --password-stdin
+        if [ "${GITHUB_REF}" == "refs/heads/main" ]; then docker push ${{ inputs.DOCKERHUB_USR }}/pipeline:latest; fi

@@ -1,0 +1,6 @@
+cryptography==3.4.7
+numpy==1.20.2
+pandas==1.2.4
+pymysql==1.0.2
+requests==2.25.1
+scikit-learn==0.24.1
