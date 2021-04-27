@@ -14,7 +14,7 @@ volumes:
     driver: local
 services:
   sandbox:
-    image: andreper/sandbox:latest
+    image: sandbox:latest
     container_name: sandbox
     network_mode: host
     ports:
@@ -23,7 +23,7 @@ services:
       - sandbox:/opt/workspace
       - registry:/opt/registry
   pipeline:
-    image: andreper/pipeline:latest
+    image: pipeline:latest
     container_name: pipeline
     environment:
       AIRFLOW__WEBSERVER__WORKERS: "2"
@@ -48,7 +48,7 @@ services:
       - database:/var/lib/mysql
       - ./database/schema/schema.sql:/docker-entrypoint-initdb.d/schema.sql
   serving:
-    image: andreper/serving:latest
+    image: serving:latest
     container_name: serving
     environment:
       PORT: "8000"

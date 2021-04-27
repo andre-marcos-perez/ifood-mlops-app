@@ -1,0 +1,30 @@
+name: build-serving
+description: builds serving image
+inputs:
+  DOCKERHUB_USR:
+    description: 'Docker Hub user to push images with'
+    required: true
+  DOCKERHUB_PWD:
+    description: 'Docker Hub password to push images with'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Build Base Image
+      shell: bash
+      run: |
+        cd ${GITHUB_WORKSPACE}/build
+        docker build \
+          -f shared/Dockerfile \
+          -t base:latest .
+    - name: Build & Push Serving Image
+      shell: bash
+      run: |
+        cd ${GITHUB_WORKSPACE}/build
+        docker build \
+          --build-arg build_date="$(date -u +'%Y-%m-%d')" \
+          -f serving/Dockerfile \
+          -t serving:latest .
+        docker tag serving:latest ${{ inputs.DOCKERHUB_USR }}/serving:latest
+        echo ${{ inputs.DOCKERHUB_PWD }} | docker login -u ${{ inputs.DOCKERHUB_USR }} --password-stdin
+        if [ "${GITHUB_REF}" == "refs/heads/main" ]; then docker push ${{ inputs.DOCKERHUB_USR }}/serving:latest; fi

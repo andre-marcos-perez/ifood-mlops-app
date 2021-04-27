@@ -6,7 +6,6 @@ import pandas as pd
 from pydantic import BaseModel
 from fastapi import FastAPI, Header
 
-from models import Models
 from database import Database
 from registry import Registry
 
@@ -42,25 +41,28 @@ class Predicted(BaseModel):
 
 
 app = FastAPI(title='Serving API')
+in_memory_models = dict()
 
 
 @app.post("/predictions", response_model=Predicted)
-def predict(prediction: Prediction, x_api_key: str = Header(None)) -> typing.Dict[str, typing.Union[str, typing.Any]]:
+async def predict(prediction: Prediction, x_api_key: str = Header(None)) -> typing.Dict[str, typing.Union[str, typing.Any]]:
 
     """
     Generate predictions using memory loaded models
     """
 
-    models = Models()
+    global in_memory_models
     database = Database()
     prediction_dict = prediction.dict()
+    print(prediction_dict)
+    print(in_memory_models)
 
     model_name = prediction_dict["model"]
-    model_object = models.in_memory_models[model_name]["model_object"]
+    model_object = in_memory_models[model_name]["model_object"]
     predicted = model_object.predict(pd.DataFrame(prediction_dict['features'], index=[0]))
 
-    project_id = models.in_memory_models[model_name]["project_id"]
-    experiment_id = models.in_memory_models[model_name]["experiment_id"]
+    project_id = in_memory_models[model_name]["project_id"]
+    experiment_id = in_memory_models[model_name]["experiment_id"]
     query = f"" \
             f"INSERT INTO serving (project_id, experiment_id, payload, api_key) " \
             f"VALUES ('{project_id}', '{experiment_id}', '{json.dumps(predicted.tolist()[0])}', '{x_api_key}')"
@@ -75,13 +77,13 @@ def predict(prediction: Prediction, x_api_key: str = Header(None)) -> typing.Dic
 
 
 @app.post("/models")
-def update_models_in_memory() -> typing.Dict[str, typing.Union[bool, typing.Any]]:
+async def update_models_in_memory() -> typing.Dict[str, typing.Union[bool, typing.Any]]:
 
     """
     Dumps deployed models into memory to speed up inference process
     """
 
-    models = Models()
+    global in_memory_models
     database = Database()
     registry = Registry()
 
@@ -90,7 +92,7 @@ def update_models_in_memory() -> typing.Dict[str, typing.Union[bool, typing.Any]
         query = f"" \
                 f"SELECT e.id as 'experiment_id', e.project_id as 'project_id', p.name as 'model_name' " \
                 f"FROM experiment e, project p " \
-                f"WHERE e.status = 'deployed' AND e.project_id = p.id"
+                f"WHERE e.status = 'to-deploy' AND e.project_id = p.id"
         models_metadata = database.read(query=query)
 
         for model_metadata in models_metadata:
@@ -98,7 +100,10 @@ def update_models_in_memory() -> typing.Dict[str, typing.Union[bool, typing.Any]
             project_id = model_metadata['project_id']
             experiment_id = model_metadata['experiment_id']
             model_object = registry.get_model(path=f"{project_id}-{experiment_id}", key='model')
-            models.in_memory_models.update({f"{model_name}": {'model_object': model_object, 'project_id': project_id, 'experiment_id': experiment_id}})
+            in_memory_models.update({f"{model_name}": {'model_object': model_object, 'project_id': project_id, 'experiment_id': experiment_id}})
+            print({f"{model_name}": {'model_object': model_object, 'project_id': project_id, 'experiment_id': experiment_id}})
+
+        print(in_memory_models)
 
     except Exception as exc:
         raise exc

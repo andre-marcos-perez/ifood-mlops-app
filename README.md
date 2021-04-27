@@ -43,15 +43,34 @@ For a further description of each application, please checkout [docs](docs/Apps.
 
 ## 3. Build
 
+## 3.1. Local build
+
+You can build the project locally.
+
 > **Note**: Local build is currently only supported on Linux OS distributions.
 
 ```bash
 ./build.sh
 ```
 
+## 3.2. Remote build (recommended)
+
+Alternatively, you can use the images pre-built on [DockerHub](https://hub.docker.com/u/andreper). The images are built
+with GitHub actions, you can check the code [here](.github/workflows).
+
 ## 4. Run
 
-The platform can be started by running the following command:
+## 4.1. Run local build
+
+If you build the project locally, you can start the platform with the following command:
+
+```bash
+docker-compose -f docker-compose-local.yml up
+```
+
+## 4.2. Run remote build (recommended)
+
+If you prefer to use the pre-built images, start the platform by running the following command:
 
 ```bash
 docker-compose up
