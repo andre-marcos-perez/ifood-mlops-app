@@ -104,7 +104,7 @@ def get_deployments():
 def get_predictions(project_id: int):
     database = Database()
     query = f"SELECT * FROM serving WHERE project_id = {project_id}"
-    return database.read(query=query)[0]
+    return database.read(query=query)
 
 
 def get_prediction(prediction_id: int):
