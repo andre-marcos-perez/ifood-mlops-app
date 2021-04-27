@@ -46,6 +46,7 @@ CREATE TABLE serving (
     project_id INT NOT NULL,
     experiment_id INT NOT NULL,
     payload MEDIUMBLOB,
+    api_key VARCHAR(30) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT pk_serving PRIMARY KEY (id),

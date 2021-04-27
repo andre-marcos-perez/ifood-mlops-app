@@ -85,14 +85,10 @@ def get_experiment_target(experiment_id: int) -> pd.DataFrame:
 
 
 def deploy_experiment(experiment_id: int) -> bool:
-    database = Database()
-    query = f"SELECT project_id FROM experiment WHERE id = {experiment_id}"
-    project_id = database.read(query=query)[0]['project_id']
-    query = f"UPDATE experiment SET status = 'rolled-back' WHERE project_id = '{project_id}' AND status = 'deployed'"
-    database.write(query=query)
-    query = f"UPDATE experiment SET status = 'deployed' WHERE id = {experiment_id}"
-    database.write(query=query)
-    return True
+    pipeline = Pipeline()
+    conf = {'experiment_id': experiment_id}
+    triggered = pipeline.trigger_dag(dag_id=f'deploy-pipeline', data=dict(conf=conf))
+    return triggered
 
 
 def get_deployments():

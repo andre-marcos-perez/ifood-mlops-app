@@ -21,10 +21,3 @@ class Pipeline(object):
             raise exc
         else:
             return True
-
-
-if __name__ == '__main__':
-
-    pipe = Pipeline()
-    triggered = pipe.trigger_dag(dag_id='scikit-pipeline', data={'conf': {'experiment_id': 10}})
-    print(triggered)

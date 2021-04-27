@@ -3,13 +3,12 @@ import typing
 from datetime import datetime
 
 import pandas as pd
-from fastapi import FastAPI
 from pydantic import BaseModel
+from fastapi import FastAPI, Header
 
+from models import Models
 from database import Database
 from registry import Registry
-
-app = FastAPI()
 
 
 class Prediction(BaseModel):
@@ -42,30 +41,69 @@ class Predicted(BaseModel):
         }
 
 
+app = FastAPI(title='Serving API')
+
+
 @app.post("/predictions", response_model=Predicted)
-async def predict(prediction: Prediction) -> typing.Dict[str, typing.Union[str, typing.Any]]:
+def predict(prediction: Prediction, x_api_key: str = Header(None)) -> typing.Dict[str, typing.Union[str, typing.Any]]:
 
+    """
+    Generate predictions using memory loaded models
+    """
+
+    models = Models()
     database = Database()
-    registry = Registry()
-
     prediction_dict = prediction.dict()
 
-    query = f"SELECT id FROM project WHERE name = '{prediction_dict['model']}'"
-    project_id = database.read(query=query)[0]['id']
+    model_name = prediction_dict["model"]
+    model_object = models.in_memory_models[model_name]["model_object"]
+    predicted = model_object.predict(pd.DataFrame(prediction_dict['features'], index=[0]))
 
-    query = f"SELECT id FROM experiment WHERE id = '{project_id}' AND status = 'deployed'"
-    experiment_id = database.read(query=query)[0]['id']
-
-    model = registry.get_model(path=f"{project_id}-{experiment_id}", key='model')
-    predicted = model.predict(pd.DataFrame(prediction_dict['features'], index=[0]))
-    predicted = {'prediction': predicted.tolist()[0]}
-
-    query = f"INSERT INTO serving (project_id, experiment_id, payload) VALUES ('{project_id}', '{experiment_id}', '{json.dumps(predicted)}')"
+    project_id = models.in_memory_models[model_name]["project_id"]
+    experiment_id = models.in_memory_models[model_name]["experiment_id"]
+    query = f"" \
+            f"INSERT INTO serving (project_id, experiment_id, payload, api_key) " \
+            f"VALUES ('{project_id}', '{experiment_id}', '{json.dumps(predicted.tolist()[0])}', '{x_api_key}')"
     prediction_id = database.write(query)
 
     payload = dict()
     payload.update({'id': prediction_id})
-    payload.update(predicted)
+    payload.update({'prediction': predicted.tolist()[0]})
     payload.update({'timestamp': datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')})
 
     return payload
+
+
+@app.post("/models")
+def update_models_in_memory() -> typing.Dict[str, typing.Union[bool, typing.Any]]:
+
+    """
+    Dumps deployed models into memory to speed up inference process
+    """
+
+    models = Models()
+    database = Database()
+    registry = Registry()
+
+    try:
+
+        query = f"" \
+                f"SELECT e.id as 'experiment_id', e.project_id as 'project_id', p.name as 'model_name' " \
+                f"FROM experiment e, project p " \
+                f"WHERE e.status = 'deployed' AND e.project_id = p.id"
+        models_metadata = database.read(query=query)
+
+        for model_metadata in models_metadata:
+            model_name = model_metadata['model_name']
+            project_id = model_metadata['project_id']
+            experiment_id = model_metadata['experiment_id']
+            model_object = registry.get_model(path=f"{project_id}-{experiment_id}", key='model')
+            models.in_memory_models.update({f"{model_name}": {'model_object': model_object, 'project_id': project_id, 'experiment_id': experiment_id}})
+
+    except Exception as exc:
+        raise exc
+
+    else:
+        payload = dict()
+        payload.update({"status": True})
+        return payload
