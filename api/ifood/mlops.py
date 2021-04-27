@@ -99,3 +99,15 @@ def get_deployments():
     query = f"SELECT * FROM experiment WHERE status = 'deployed'"
     database = Database()
     return database.read(query=query)
+
+
+def get_predictions(project_id: int):
+    database = Database()
+    query = f"SELECT * FROM serving WHERE project_id = {project_id}"
+    return database.read(query=query)[0]
+
+
+def get_prediction(prediction_id: int):
+    database = Database()
+    query = f"SELECT * FROM serving WHERE id = {prediction_id}"
+    return database.read(query=query)[0]

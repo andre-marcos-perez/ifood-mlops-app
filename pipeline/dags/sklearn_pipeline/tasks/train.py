@@ -22,9 +22,7 @@ def train(**context):
 
         model = registry.get_model(path=f"{project_id}-{experiment_id}", key='pre-model')
         dataset = registry.get_dataset(path=f"{project_id}-{experiment_id}", key='train')
-
-        print(dataset.drop(f"{target_col}", axis=1).head())
-        print(dataset[f"{target_col}"])
+        dataset.drop(dataset.columns[0], axis=1, inplace=True)
 
         model.fit(dataset.drop(f"{target_col}", axis=1), dataset[f"{target_col}"])
         registry.put_model(path=f"{project_id}-{experiment_id}", key='model', model=model)

@@ -44,6 +44,7 @@ function cleanImages() {
 }
 
 function cleanVolume() {
+  docker volume rm "registry"
   docker volume rm "sandbox"
   docker volume rm "database"
 }

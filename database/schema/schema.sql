@@ -41,6 +41,18 @@ CREATE TABLE experiment (
     FOREIGN KEY (project_id) REFERENCES project (id)
 );
 
+CREATE TABLE serving (
+    id INT UNIQUE NOT NULL AUTO_INCREMENT,
+    project_id INT NOT NULL,
+    experiment_id INT NOT NULL,
+    payload MEDIUMBLOB,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT pk_serving PRIMARY KEY (id),
+    FOREIGN KEY (project_id) REFERENCES project (id),
+    FOREIGN KEY (experiment_id) REFERENCES experiment (id)
+);
+
 # ----------------------------------------------------------------------------
 # -- ROLLBACK
 # ----------------------------------------------------------------------------

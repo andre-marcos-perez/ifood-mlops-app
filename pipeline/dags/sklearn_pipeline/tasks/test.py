@@ -24,6 +24,7 @@ def test(**context):
         dataset = registry.get_dataset(path=f"{project_id}-{experiment_id}", key='test')
         metrics = registry.get_model(path=f"{project_id}-{experiment_id}", key='metrics')
 
+        dataset.drop(dataset.columns[0], axis=1, inplace=True)
         calculated_metrics = dict()
         for metric, func in metrics.items():
             calculated_metrics[metric] = func(dataset[f"{target_col}"], model.predict(dataset.drop(f"{target_col}", axis=1)))

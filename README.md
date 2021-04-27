@@ -1,6 +1,6 @@
 # iFood MLOps App
 
-> short description
+> This repository is the documentation of my solution for the iFood ML Engineer test.
 
 ## 1. Getting Started
 
@@ -12,13 +12,13 @@
 
 ### 1.3. Applications
 
-| App          | Address                                            | Description                                                     |
-| ------------ | -------------------------------------------------- | --------------------------------------------------------------- |
-| Sandbox      | [localhost:8888](http://localhost:8888/)           | **Jupyter** based env to develop, train, test and deploy models |
-| Pipeline     | [localhost:8080](http://localhost:8080/)           | **Airflow** based pipeline to train and test models             |
-| Database     | [localhost:3306](http://localhost:3306/)           | **MySQL** based database to register ML experiments             |
-| Serving API  | [localhost:8000](http://localhost:8000/)           | **FastAPI** based api to serve models prediction                |
-| Serving Docs | [localhost:8000/docs](http://localhost:8000/docs/) | **Swagger** based web docs for serving api                      |
+| App          | Address                                            | Description                                                 |
+| ------------ | -------------------------------------------------- | ----------------------------------------------------------- |
+| Sandbox      | [localhost:8888](http://localhost:8888/)           | Jupyter based env to develop, train, test and deploy models |
+| Pipeline     | [localhost:8080](http://localhost:8080/)           | Apache Airflow based pipeline to train and test models      |
+| Database     | [localhost:3306](http://localhost:3306/)           | MySQL based database to register ML experiments             |
+| Serving API  | [localhost:8000](http://localhost:8000/)           | FastAPI based api to serve models prediction                |
+| Serving Docs | [localhost:8000/docs](http://localhost:8000/docs/) | Swagger based web docs for serving api                      |
 
 ### 1.4. Pre-requisites
 
