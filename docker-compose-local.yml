@@ -1,0 +1,60 @@
+---
+# ----------------------------------------------------------------------------------------
+# -- Docs: https://github.com/andre-marcos-perez/ifood-mlops-app -------------------------
+# ----------------------------------------------------------------------------------------
+version: "3.6"
+volumes:
+  registry:
+    name: "registry"
+  sandbox:
+    name: "sandbox"
+    driver: local
+  database:
+    name: "database"
+    driver: local
+services:
+  sandbox:
+    image: sandbox:latest
+    container_name: sandbox
+    network_mode: host
+    ports:
+      - 8888:8888
+    volumes:
+      - sandbox:/opt/workspace
+      - registry:/opt/registry
+  pipeline:
+    image: pipeline:latest
+    container_name: pipeline
+    environment:
+      AIRFLOW__WEBSERVER__WORKERS: "2"
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "False"
+    command: webserver
+    network_mode: host
+    ports:
+      - 8080:8080
+    volumes:
+      - registry:/opt/registry
+      - ./pipeline/dags/:/usr/local/airflow/dags/
+      - ./pipeline/requirements.txt:/requirements.txt
+  database:
+    image: mysql:8.0.23
+    container_name: database
+    environment:
+      MYSQL_ROOT_PASSWORD: "root"
+    network_mode: host
+    ports:
+      - 3306:3306
+    volumes:
+      - database:/var/lib/mysql
+      - ./database/schema/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+  serving:
+    image: serving:latest
+    container_name: serving
+    environment:
+      PORT: "8000"
+    network_mode: host
+    ports:
+      - 8000:8000
+    volumes:
+      - registry:/opt/registry
+...
