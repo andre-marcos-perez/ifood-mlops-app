@@ -1,8 +1,21 @@
 # iFood MLOps App
 
-> This repository is the documentation of my solution for the iFood ML Engineer test.
+> This repository is my solution for the **[iFood ML Engineer test](https://github.com/ifood/ifood-data-ml-engineer-test)**.
 
-![build-main](https://github.com/andre-marcos-perez/ifood-mlops-app/actions/workflows/main.yaml/badge.svg)
+![build](https://github.com/andre-marcos-perez/ifood-mlops-app/actions/workflows/main.yaml/badge.svg)
+![python](https://img.shields.io/badge/python-v3.8-blue)
+![airflow](https://img.shields.io/badge/airflow-v1.10.9-red)
+![jupyterlab](https://img.shields.io/badge/jupyterlab-v3.0.0-orange)
+![fastapi](https://img.shields.io/badge/fastapi-v0.63.0-green)
+![docker](https://img.shields.io/badge/docker-v1.13.0%2B-blue)
+
+## TL;DR
+
+```bash
+git clone https://github.com/andre-marcos-perez/ifood-mlops-app.git
+cd ifood-mlops-app
+docker-compose up
+```
 
 ## 1. Getting Started
 
@@ -11,10 +24,10 @@
 The iFood MLOps App is a ML platform built on top of Docker designed to help data scientists to develop and deploy ML 
 models. It is composed by four main components tied together by a Python SDK: 
 
- - **Sandbox**: Jupyter based env to develop, train, test and deploy models;
+ - **Sandbox**: Jupyter based env to develop models and interact with the platform;
  - **Pipeline**: Apache Airflow based pipeline to train, test and deploy models;
  - **Database**: MySQL based database to register ML experiments and predictions;
- - **Serving**: FastAPI based api to serve predictions.
+ - **Serving**: FastAPI based API to serve predictions.
  
 The ML platform dynamics is best understood with [this](/sandbox/workspace/iris.ipynb) example notebook that will be
 available at runtime.
@@ -50,6 +63,8 @@ You can build the project locally.
 > **Note**: Local build is currently only supported on Linux OS distributions.
 
 ```bash
+git clone https://github.com/andre-marcos-perez/ifood-mlops-app.git
+cd ifood-mlops-app
 ./build.sh
 ```
 
@@ -73,5 +88,7 @@ docker-compose -f docker-compose-local.yml up
 If you prefer to use the pre-built images, start the platform by running the following command:
 
 ```bash
+git clone https://github.com/andre-marcos-perez/ifood-mlops-app.git
+cd ifood-mlops-app
 docker-compose up
 ```

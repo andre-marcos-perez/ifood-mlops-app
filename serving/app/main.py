@@ -1,5 +1,6 @@
 import json
 import typing
+import logging
 from datetime import datetime
 
 import pandas as pd
@@ -40,6 +41,7 @@ class Predicted(BaseModel):
         }
 
 
+logging.basicConfig(level=logging.INFO)
 app = FastAPI(title='Serving API')
 in_memory_models = dict()
 
@@ -48,14 +50,14 @@ in_memory_models = dict()
 async def predict(prediction: Prediction, x_api_key: str = Header(None)) -> typing.Dict[str, typing.Union[str, typing.Any]]:
 
     """
-    Generate predictions using memory loaded models
+    Generates predictions using memory loaded models
     """
 
     global in_memory_models
     database = Database()
     prediction_dict = prediction.dict()
-    print(prediction_dict)
-    print(in_memory_models)
+    logging.info(f"Request body: {prediction_dict}")
+    logging.info(f"In-memory models: {in_memory_models}")
 
     model_name = prediction_dict["model"]
     model_object = in_memory_models[model_name]["model_object"]
@@ -72,6 +74,7 @@ async def predict(prediction: Prediction, x_api_key: str = Header(None)) -> typi
     payload.update({'id': prediction_id})
     payload.update({'prediction': predicted.tolist()[0]})
     payload.update({'timestamp': datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')})
+    logging.info(f"Response payload: {payload}")
 
     return payload
 
@@ -101,9 +104,8 @@ async def update_models_in_memory() -> typing.Dict[str, typing.Union[bool, typin
             experiment_id = model_metadata['experiment_id']
             model_object = registry.get_model(path=f"{project_id}-{experiment_id}", key='model')
             in_memory_models.update({f"{model_name}": {'model_object': model_object, 'project_id': project_id, 'experiment_id': experiment_id}})
-            print({f"{model_name}": {'model_object': model_object, 'project_id': project_id, 'experiment_id': experiment_id}})
 
-        print(in_memory_models)
+        logging.info(f"In-memory models: {in_memory_models}")
 
     except Exception as exc:
         raise exc

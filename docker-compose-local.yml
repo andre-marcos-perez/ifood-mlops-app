@@ -6,6 +6,7 @@ version: "3.6"
 volumes:
   registry:
     name: "registry"
+    driver: local
   sandbox:
     name: "sandbox"
     driver: local
